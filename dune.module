@@ -1,0 +1,12 @@
+################################
+# Dune module information file #
+################################
+
+# Name of the module
+Module: locfunction-pred
+Version: 1.0
+Maintainer: jurak@math.hr
+# Required build dependencies
+Depends: dune-common dune-uggrid dune-geometry dune-localfunctions dune-grid dune-istl
+# Optional build dependencies
+#Suggests:
