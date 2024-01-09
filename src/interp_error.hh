@@ -47,6 +47,7 @@ double interpolationError(GridView const & gv, FEM const & fem)
     for(auto const & elem : elements(gv))
     {
         // NASTAVI ....
+        auto fun = funkcija_loc(elem);  // dedukcija tipa Element u konstruktoru
         // formula numeričke integracije
         auto const & rule = Dune::QuadratureRules<double,dim>::rule(elem.geometry().type(), 6);
         double local_l2_error2 = 0.0;
@@ -57,6 +58,14 @@ double interpolationError(GridView const & gv, FEM const & fem)
             auto const & xi = qpoint.position();  // lokalna koordinata
             const double dx = elem.geometry().integrationElement(xi);
            // NASTAVI ...
+            double ev = fun(xi); //exact value, xi je točka
+            basis.evaluateFunction(xi, phi);
+            double approx = 0;
+            for(int i=0; i<basis.size(); ++i)
+            {
+                approx += phi[i]*coeff[i];
+            }
+            local_l2_error2 += (ev-approx)*(ev-approx)*wi*dx;
         }
         global_l2_error2 += local_l2_error2;
     }
