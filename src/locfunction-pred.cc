@@ -9,7 +9,7 @@
 #include <dune/localfunctions/lagrange/lagrangecube.hh>
 #include <dune/localfunctions/lagrange/lagrangesimplex.hh>
 
-//#include "interp_error.hh"
+#include "interp_error.hh"
 
 int main(int argc, char** argv)
 {
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     double h = 0.2;  // inicijalni korak mreže
 
     // Konačni elementi
-    const int polDeg = 1;
+    const int polDeg = 2;
     using FEM = Dune::LagrangeCubeLocalFiniteElement<double, double, dim, polDeg>;
     // za simplekse:
     //using FEM = Dune::LagrangeSimplexLocalFiniteElement<double, double, dim, polDeg>;
@@ -57,20 +57,20 @@ int main(int argc, char** argv)
     basis.evaluateFunction(x,phi);      // izračunaj sve bazne funkcije u točki x
     basis.evaluateJacobian(x,grad_phi); // izračunaj gradijente svih baznih funkcija u točki x
 
-    std::array<unsigned int, dim> order{2,1};
- //   std::vector<RangeType> parc;
-//    basis.partial(order,x,parc);
+    //std::array<unsigned int, dim> order{2,1};
+    //std::vector<RangeType> parc;
+    //basis.partial(order,x,parc);
 
     std::cout << "=== Vrijenosti baznih funkcija i njenih derivacija ===\n";
     for(unsigned int i=0; i<phi.size(); ++i){
         std::cout << "phi_"<< i << "(" << x <<") = " << phi[i] << ", ";
         std::cout << "grad phi_"<< i << "(" << x << ") = " << "(" << grad_phi[i][0]<<")" << std::endl;
 
- //       std::cout << "D_{2,1}phi_"<< i << "(" << x <<") = " << parc[i] << "\n";
+    //    std::cout << "D_{2,1}phi_"<< i << "(" << x <<") = " << parc[i] << "\n";
     }
 
     // Lokalni koeficijenti
-    // coeff.localKey(i) -> [index, codim, k]
+    //coeff.localKey(i) -> [index, codim, k]
     std::cout << "== Lokalni koeficijenti ===\n";
     for(unsigned int n_deg=0; n_deg<coeff.size(); ++n_deg){
         auto key = coeff.localKey(n_deg);
@@ -92,19 +92,19 @@ int main(int argc, char** argv)
     for(double val : coefficients) std::cout << val <<", ";
     std::cout << std::endl;
 
-//    // Zadatak s greškom interpolacije.
-//    // Prevoditelj ne može deducirati Element.
-//    using Element = GridView::template Codim<0>::Entity;
-//    double error_prev = interpolationError(gv, fem);
-//    for(int i=0; i<4; ++i){
-//        grid.globalRefine(1);
-//        double error = interpolationError(gv, fem);
-//        double alpha = std::log(error_prev/error) / std::log(2.0);
-//        double C = error_prev/std::pow(h,alpha);
-//        std::cout << "Error = " << error
-//                  << ", alpha = " << alpha << ", C = " << C << "\n";
-//        h /= 2;
-//        error_prev = error;
-//    }
+    // Zadatak s greškom interpolacije.
+    // Prevoditelj ne može deducirati Element.
+    // using Element = GridView::template Codim<0>::Entity;
+    double error_prev = interpolationError(gv, fem);
+    for(int i=0; i<4; ++i){
+        grid.globalRefine(1);
+        double error = interpolationError(gv, fem);
+        double alpha = std::log(error_prev/error) / std::log(2.0);
+        double C = error_prev/std::pow(h,alpha);
+        std::cout << "Error = " << error
+                  << ", alpha = " << alpha << ", C = " << C << "\n";
+        h /= 2;
+        error_prev = error;
+    }
     return 0;
 }
